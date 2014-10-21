@@ -84,36 +84,33 @@ uuid = function()
 	return oscarg.i(rand(1024))
 end
 
-f = io.input('/etc/hostname')
-hostname = f:read('*l')
-f:close()
+osc_false = oscarg.i(0)
+osc_true = oscarg.i(1)
+
+N = 160
+offset = (3.0*12.0 - 0.5 - (N % 18 / 6.0))
+range = N / 3.0
 
 -- construct and send messages
 conf_client:send( OscMessage('/engines/reset', { uuid() }) )
-conf_client:send( OscMessage('/engines/offset', { uuid(), oscarg.f(0.002) }) )
-conf_client:send( OscMessage('/engines/parallel', { uuid(), oscarg.i(0) }) )
-conf_client:send( OscMessage('/engines/enabled', { uuid(), oscarg.i(0) }) )
-conf_client:send( OscMessage('/engines/address', { uuid(), oscarg.s(hostname .. '.local:8000') }) )
-conf_client:send( OscMessage('/engines/server', { uuid(), oscarg.i(0) }) )
+conf_client:send( OscMessage('/engines/offset', { uuid(), oscarg.f(0.0025) }) )
+conf_client:send( OscMessage('/engines/parallel', { uuid(), osc_false }) )
+conf_client:send( OscMessage('/engines/enabled', { uuid(), osc_false }) )
+conf_client:send( OscMessage('/engines/address', { uuid(), oscarg.s(conf_client.local_address .. ':8000') }) )
+conf_client:send( OscMessage('/engines/server', { uuid(), osc_false }) )
 conf_client:send( OscMessage('/engines/mode', { uuid(), oscarg.s('osc.udp') }) )
-conf_client:send( OscMessage('/engines/enabled', { uuid(), oscarg.i(1) }) )
-		
-dest  = oscarg.s('/renoise/trigger/midi')
-conf_client:send( OscMessage('/engines/custom/enabled', { uuid(), oscarg.i(1) }) )
-conf_client:send( OscMessage('/engines/custom/reset', { uuid() }) )
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('on'), dest,
-	oscarg.s('i(0x7f0090 $g| 13.5 $n 18% 6/- $n 3/ $x @@ $g[*+ 8<<|)') }) );
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('off'), dest,
-	oscarg.s('i(0x7f0080 $g| 13.5 $n 18% 6/- $n 3/ $g]*+ 8<<|)') }) );
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('set'), dest,
-	oscarg.s('i(0xe0 $g| $x $g]- 0x2000* 0x1fff+ @@ 7>> 16<< # 0x7f& 8<<| |)') }) );
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('set'), dest,
-	oscarg.s('i(0x27b0 $g| $z 0x3fff* 0x7f& 16<<|)') }) );
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('set'), dest,
-	oscarg.s('i(0x07b0 $g| $z 0x3fff* 7>> 16<<|)') }) );
+conf_client:send( OscMessage('/engines/enabled', { uuid(), osc_true }) )
 
 conf_client:send( OscMessage('/sensors/rate', { uuid(), oscarg.i(2000) }) )
 conf_client:send( OscMessage('/sensors/group/reset', { uuid() }) )
 conf_client:send( OscMessage('/sensors/group/attributes/0', { uuid(), oscarg.f(0.0), oscarg.f(1.0), oscarg.i(0), oscarg.i(1), oscarg.i(0) }) )
 conf_client:send( OscMessage('/sensors/group/attributes/1', { uuid(), oscarg.f(0.0), oscarg.f(1.0), oscarg.i(1), oscarg.i(0), oscarg.i(0) }) )
 conf_client:send( OscMessage('/sensors/number', { uuid() }) )
+		
+conf_client:send( OscMessage('/engines/oscmidi/enabled', { uuid(), osc_true }) )
+conf_client:send( OscMessage('/engines/oscmidi/multi', { uuid(), osc_false }) )
+conf_client:send( OscMessage('/engines/oscmidi/path', { uuid(), oscarg.s('/renoise/trigger/midi') }) )
+conf_client:send( OscMessage('/engines/oscmidi/format', { uuid(), oscarg.s('int32') }) )
+conf_client:send( OscMessage('/engines/oscmidi/reset', { uuid() }) )
+conf_client:send( OscMessage('/engines/oscmidi/attributes/0', { uuid(), oscarg.s('control_change'), oscarg.f(offset), oscarg.f(range), oscarg.i(0x07) }) )
+conf_client:send( OscMessage('/engines/oscmidi/attributes/1', { uuid(), oscarg.s('note_pressure'), oscarg.f(offset), oscarg.f(range), oscarg.i(0x07) }) )
