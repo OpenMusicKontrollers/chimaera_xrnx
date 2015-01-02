@@ -1,5 +1,5 @@
 --[[
--- Copyright (c) 2014 Hanspeter Portner (dev@open-music-kontrollers.ch)
+-- Copyright (c) 2015 Hanspeter Portner (dev@open-music-kontrollers.ch)
 -- 
 -- This software is provided 'as-is', without any express or implied
 -- warranty. In no event will the authors be held liable for any damages
@@ -25,7 +25,19 @@
 OscMessage = renoise.Osc.Message
 
 -- open a socket connection to the server
-conf_server, err = renoise.Socket.create_server(4444, renoise.Socket.PROTOCOL_UDP)
+conf_client, err = renoise.Socket.create_client('chimaera.local', 4444, renoise.Socket.PROTOCOL_UDP)
+if err then
+  renoise.app():show_warning(('Failed to start the OSC client. Error: %s'):format(err))
+  return
+end
+
+print(conf_client.local_address)
+print(conf_client.local_port)
+print(conf_client.peer_address)
+print(conf_client.peer_port)
+
+-- open a socket connection to the server
+conf_server, err = renoise.Socket.create_server(conf_client.local_port, renoise.Socket.PROTOCOL_UDP)
 if err then 
 	renoise.app():show_warning(('Failed to start the OSC server. Error: %s'):format(err))
   return
@@ -60,15 +72,8 @@ conf_server:run({
     else
       print(('Got invalid OSC data, or data which is not OSC data at all. Error: %s'):format(err))
     end
-  end    
+	end
 })
-
--- open a socket connection to the server
-conf_client, err = renoise.Socket.create_client( 'chimaera.local', 4444, renoise.Socket.PROTOCOL_UDP)
-if err then 
-  renoise.app():show_warning(('Failed to start the OSC client. Error: %s'):format(err))
-  return
-end
 
 oscarg = {}
 setmetatable(oscarg, {
