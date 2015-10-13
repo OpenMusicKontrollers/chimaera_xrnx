@@ -101,20 +101,28 @@ conf_client:send( OscMessage('/engines/enabled', { uuid(), oscarg.i(1) }) )
 
 conf_client:send( OscMessage('/sensors/rate', { uuid(), oscarg.i(2000) }) )
 conf_client:send( OscMessage('/sensors/group/reset', { uuid() }) )
-conf_client:send( OscMessage('/sensors/group/attributes/0', { uuid(), oscarg.f(0.0), oscarg.f(1.0), oscarg.i(0), oscarg.i(1), oscarg.i(0) }) )
-conf_client:send( OscMessage('/sensors/group/attributes/1', { uuid(), oscarg.f(0.0), oscarg.f(1.0), oscarg.i(1), oscarg.i(0), oscarg.i(0) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/0/min", { uuid(), oscarg.f(0.0) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/0/max", { uuid(), oscarg.f(1.0) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/0/north", { uuid(), oscarg.i(0) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/0/south", { uuid(), oscarg.i(1) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/0/scale", { uuid(), oscarg.i(0) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/1/min", { uuid(), oscarg.f(0.0) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/1/max", { uuid(), oscarg.f(1.0) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/1/north", { uuid(), oscarg.i(1) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/1/south", { uuid(), oscarg.i(0) }) )
+conf_client:send( OscMessage("/sensors/group/attributes/1/scale", { uuid(), oscarg.i(0) }) )
 conf_client:send( OscMessage('/sensors/number', { uuid() }) )
 		
 dest  = oscarg.s('/renoise/trigger/midi')
 conf_client:send( OscMessage('/engines/custom/enabled', { uuid(), oscarg.i(1) }) )
 conf_client:send( OscMessage('/engines/custom/reset', { uuid() }) )
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('on'), dest,
-	oscarg.s('i(0x7f0090 $g| 35.5 $n 18% 6/- $n 3/ $x @@ $g[*+ 8<<|)') }) );
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('off'), dest,
-	oscarg.s('i(0x7f0080 $g| 35.5 $n 18% 6/- $n 3/ $g]*+ 8<<|)') }) );
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('set'), dest,
-	oscarg.s('i(0xe0 $g| $x $g]- 0x2000* 0x1fff+ @@ 7>> 16<< # 0x7f& 8<<| |)') }) );
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('set'), dest,
-	oscarg.s('i(0x27b0 $g| $z 0x3fff* 0x7f& 16<<|)') }) );
-conf_client:send( OscMessage('/engines/custom/append', { uuid(), oscarg.s('set'), dest,
-	oscarg.s('i(0x07b0 $g| $z 0x3fff* 7>> 16<<|)') }) );
+conf_client:send( OscMessage('/engines/custom/append/on', { uuid(),
+	oscarg.s(dest .. ' i(0x7f0090 $g| 35.5 $n 18% 6/- $n 3/ $x @@ $g[*+ 8<<|)') }) );
+conf_client:send( OscMessage('/engines/custom/append/off', { uuid(),
+	oscarg.s(dest .. ' i(0x7f0080 $g| 35.5 $n 18% 6/- $n 3/ $g]*+ 8<<|)') }) );
+conf_client:send( OscMessage('/engines/custom/append/set', { uuid(),
+	oscarg.s(dest .. ' i(0xe0 $g| $x $g]- 0x2000* 0x1fff+ @@ 7>> 16<< # 0x7f& 8<<| |)') }) );
+conf_client:send( OscMessage('/engines/custom/append/set', { uuid(),
+	oscarg.s(dest .. ' i(0x27b0 $g| $z 0x3fff* 0x7f& 16<<|)') }) );
+conf_client:send( OscMessage('/engines/custom/append/set', { uuid(),
+	oscarg.s(dest .. ' i(0x07b0 $g| $z 0x3fff* 7>> 16<<|)') }) );
